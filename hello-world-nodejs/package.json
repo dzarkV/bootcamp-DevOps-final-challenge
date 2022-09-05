@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node server/server.ts"
+    "start": "npx ts-node server/server.ts"
   },
   "author": "Devops",
   "license": "ISC",
@@ -15,7 +15,6 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.12",
-    "@types/mocha": "^8.2.2",
     "@types/node": "^14.16.1",
     "ts-node": "^10.0.0"
   }

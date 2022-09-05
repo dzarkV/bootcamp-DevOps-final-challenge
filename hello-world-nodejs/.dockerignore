@@ -1,0 +1,8 @@
+.gitignore
+.git
+.cache
+
+.devcontainer/
+node_modules/
+
+Dockerfile
