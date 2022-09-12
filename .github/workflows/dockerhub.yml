@@ -10,31 +10,6 @@ env:
   IMAGE_NAME_GOLANG: bootcampdevops_golang
 
 jobs:
-  docker_build_node:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: make run-docker-app-node
-    - name: "Call API node"
-      uses: jtalk/url-health-check-action@v2
-      with:
-          url: localhost:3000/hello
-          max-attempts: 3 
-          retry-delay: 3s
-
-  docker_build_golang:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: make run-docker-app-golang
-    - name: "Call API golang"
-      uses: jtalk/url-health-check-action@v2
-      with:
-          url: localhost:3002/hello
-          max-attempts: 3 
-          retry-delay: 3s
 
   trivy-security-node:   
     runs-on: ubuntu-latest
@@ -84,21 +59,26 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # docker_registry:
-  #   needs: docker_build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v2
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         push: true
-  #         tags: ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME }}:latest 
+  docker_registry:
+    needs: [trivy-security-node,trivy-security-golang]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push node
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:latest 
+      - name: Build and push golang
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:latest 
