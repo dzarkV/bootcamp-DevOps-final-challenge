@@ -10,31 +10,30 @@ env:
   IMAGE_NAME_GOLANG: bootcampdevops_golang
 
 jobs:
-  docker_build_node:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: make build-docker-app-node
+  # docker_build_node:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Build the Docker image
+  #     run: make build-docker-app-node
 
-  docker_build_golang:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: make build-docker-app-golang
+  # docker_build_golang:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Build the Docker image
+  #     run: make build-docker-app-golang
 
   trivy-security:   
     runs-on: ubuntu-latest
-    needs: [docker_build_node, docker_build_golang]
+    # needs: [docker_build_node, docker_build_golang]
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Build an image of node from Dockerfile
-        run: |
-          docker build -t ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:${{ github.sha }} .
+        run: make build-docker-app-node
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -43,14 +42,19 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Build an image of golang from Dockerfile
-        run: |
-          docker build -t ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:${{ github.sha }} .
+        run: make build-docker-app-golang
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
   # docker_registry:
   #   needs: docker_build
