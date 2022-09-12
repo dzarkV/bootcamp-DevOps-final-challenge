@@ -73,10 +73,12 @@ jobs:
       - name: Build and push node
         uses: docker/build-push-action@v3
         with:
+          context: "{{defaultContext}}:hello-world-nginx"
           push: true
           tags: ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:latest 
       - name: Build and push golang
         uses: docker/build-push-action@v3
         with:
+          context: "{{defaultContext}}:hello-world-golang"
           push: true
           tags: ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:latest 
