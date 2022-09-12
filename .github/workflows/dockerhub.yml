@@ -15,14 +15,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ./hello-world-nodejs/Dockerfile --tag ${{env.IMAGE_NAME_NODE}}:$(date +%F%H%M%S)
+      run: make build-docker-app-node
 
   docker_build_golang:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ./hello-world-golang/Dockerfile --tag ${{env.IMAGE_NAME_GOLANG}}:$(date +%F%H%M%S)
+      run: make build-docker-app-golang
 
   trivy-security:   
     runs-on: ubuntu-latest
