@@ -17,12 +17,9 @@ jobs:
     - name: Build the Docker image
       run: make run-docker-app-node
     - name: "Call API node"
-      uses: indiesdev/curl@v1.1
-      id: api-node
+      uses: wei/curl@v1
       with:
-          url: localhost:3000/hello
-          method: "GET"
-          log-response: true
+          args: -v localhost:3000/hello
 
   docker_build_golang:
     runs-on: ubuntu-latest
@@ -31,12 +28,9 @@ jobs:
     - name: Build the Docker image
       run: make run-docker-app-golang
     - name: "Call API golang"
-      uses: indiesdev/curl@v1.1
-      id: api-golang
+      uses: wei/curl@v1
       with:
-          url: localhost:3002/hello
-          method: "GET"
-          log-response: true
+          args: -v localhost:3002/hello
 
   trivy-security-node:   
     runs-on: ubuntu-latest
