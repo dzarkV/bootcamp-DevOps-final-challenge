@@ -6,8 +6,8 @@ on:
 
 env:
   REGISTRY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME_NODE: bootcampDevOps_nodejs
-  IMAGE_NAME_GOLANG: bootcampDevOps_golang
+  IMAGE_NAME_NODE: bootcampdevops_nodejs
+  IMAGE_NAME_GOLANG: bootcampdevops_golang
 
 jobs:
   docker_build_node:
