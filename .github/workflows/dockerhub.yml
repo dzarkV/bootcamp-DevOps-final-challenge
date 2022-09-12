@@ -33,20 +33,22 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build an image of node from Dockerfile
-        run: make build-docker-app-node
+        run: |
+          make build-docker-app-node && docker tag ${{ ENV.IMAGE_NAME_NODE }} ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:latest
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:${{ github.sha }}'
+          image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
       - name: Build an image of golang from Dockerfile
-        run: make build-docker-app-golang
+        run: |
+          make build-docker-app-golang && docker tag ${{ ENV.IMAGE_NAME_GOLANG }} ${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:latest
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:${{ github.sha }}'
+          image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_GOLANG }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL'
