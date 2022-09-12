@@ -10,23 +10,23 @@ env:
   IMAGE_NAME_GOLANG: bootcampdevops_golang
 
 jobs:
-  # docker_build_node:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Build the Docker image
-  #     run: make build-docker-app-node
-
-  # docker_build_golang:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Build the Docker image
-  #     run: make build-docker-app-golang
-
-  trivy-security:   
+  docker_build_node:
     runs-on: ubuntu-latest
-    # needs: [docker_build_node, docker_build_golang]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: make run-docker-app-node && curl localhost:3000/hello 
+
+  docker_build_golang:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: make run-docker-app-golang && curl localhost:3002/hello
+
+  trivy-security-node:   
+    runs-on: ubuntu-latest
+    needs: docker_build_node
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -41,6 +41,20 @@ jobs:
           image-ref: '${{ env.REGISTRY_NAME }}/${{ ENV.IMAGE_NAME_NODE }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  trivy-security-golang:   
+    runs-on: ubuntu-latest
+    needs: docker_build_golang
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Build an image of golang from Dockerfile
         run: |
