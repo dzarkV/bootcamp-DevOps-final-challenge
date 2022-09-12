@@ -15,14 +15,28 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: make run-docker-app-node && curl localhost:3000/hello 
+      run: make run-docker-app-node
+    - name: "Call API node"
+      uses: indiesdev/curl@v1.1
+      id: api-node
+      with:
+          url: localhost:3000/hello
+          method: "GET"
+          log-response: true
 
   docker_build_golang:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: make run-docker-app-golang && curl localhost:3002/hello
+      run: make run-docker-app-golang
+    - name: "Call API golang"
+      uses: indiesdev/curl@v1.1
+      id: api-golang
+      with:
+          url: localhost:3002/hello
+          method: "GET"
+          log-response: true
 
   trivy-security-node:   
     runs-on: ubuntu-latest
