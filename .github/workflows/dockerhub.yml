@@ -17,9 +17,11 @@ jobs:
     - name: Build the Docker image
       run: make run-docker-app-node
     - name: "Call API node"
-      uses: wei/curl@v1
+      uses: jtalk/url-health-check-action@v2
       with:
-          args: -v localhost:3000/hello
+          url: localhost:3000/hello
+          max-attempts: 3 
+          retry-delay: 3s
 
   docker_build_golang:
     runs-on: ubuntu-latest
@@ -28,9 +30,11 @@ jobs:
     - name: Build the Docker image
       run: make run-docker-app-golang
     - name: "Call API golang"
-      uses: wei/curl@v1
+      uses: jtalk/url-health-check-action@v2
       with:
-          args: -v localhost:3002/hello
+          url: localhost:3002/hello
+          max-attempts: 3 
+          retry-delay: 3s
 
   trivy-security-node:   
     runs-on: ubuntu-latest
